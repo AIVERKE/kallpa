@@ -168,7 +168,62 @@ flask db upgrade
 
 ---
 
-## 🐛 Solución de Problemas de Instalación
+## 🛑 Política de Contribución (Pull Requests)
+
+Para mantener la calidad y estabilidad del código, es **obligatorio** seguir el siguiente flujo de trabajo para cualquier cambio en el proyecto:
+
+### 1. Crear Rama (Feature Branch)
+
+Nunca trabajes directamente sobre `main`. Crea una rama descriptiva para tu tarea:
+
+```bash
+git checkout -b feature/nombre-de-la-feature
+# Ejemplo: git checkout -b feature/nuevo-producto
+```
+
+### 2. Guardar Cambios
+
+Realiza commits atómicos y con mensajes claros:
+
+```bash
+git commit -m "Agrega endpoint de productos"
+```
+
+### 3. Subir Cambios
+
+Sube tu rama al repositorio remoto:
+
+```bash
+git push origin feature/nombre-de-la-feature
+```
+
+### 4. Crear Pull Request (PR)
+
+1.  Ve al repositorio en **GitHub**.
+2.  Verás un botón verde **"Compare & pull request"**. Haz clic en él.
+3.  Describe tus cambios detalladamente en el cuerpo del PR.
+
+### 5. Revisión (Code Review)
+
+1.  Avisa al equipo (Frontend Dev o Tech Lead) para que revisen tu PR.
+2.  El revisor debe entrar a la pestaña "Files changed", revisar el código y aprobarlo (**"Approve"**) si todo está correcto.
+
+### 6. Merge
+
+Solo cuando el PR tenga al menos una aprobación ("Approve"), el botón **"Merge pull request"** se habilitará. Haz clic para integrar tus cambios a la rama `main`.
+
+---
+
+## � Documentación Técnica Adicional
+
+Para mantener este README limpio, hemos separado los detalles técnicos en documentos específicos:
+
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Explica la estructura de carpetas y decisiones de arquitectura del Monorepo.
+- **[API_CONTRACT.md](./API_CONTRACT.md)**: **(IMPORTANTE)** Define los contratos JSON de los endpoints (Payloads de Request/Response) que tanto Backend como Frontend deben respetar.
+
+---
+
+## �🐛 Solución de Problemas de Instalación
 
 1.  **Error "Scripts cannot be executed on this system" (Windows):**
 
