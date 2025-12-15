@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  # --- 1. Database ---
+  db:
+    image: postgres:14-alpine
+    container_name: kallpa_db
+    environment:
+      POSTGRES_USER: kallpa_user
+      POSTGRES_PASSWORD: kallpa_password
+      POSTGRES_DB: kallpa_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kallpa_user -d kallpa_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- 2. Backend (Flask) ---
+  backend:
+    build: ./kallpa-backend
+    container_name: kallpa_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://kallpa_user:kallpa_password@db:5432/kallpa_db
+      - SECRET_KEY=dev_key_secreta_123
+      - FLASK_ENV=production
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # --- 3. Frontend (Next.js) ---
+  frontend:
+    build: ./kallpa-frontend
+    container_name: kallpa_frontend
+    restart: always
+    environment:
+      # Browser side needs localhost
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
