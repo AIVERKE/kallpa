@@ -27,9 +27,12 @@ services:
     environment:
       - DATABASE_URL=postgresql://kallpa_user:kallpa_password@db:5432/kallpa_db
       - SECRET_KEY=dev_key_secreta_123
-      - FLASK_ENV=production
+      - FLASK_ENV=development
     ports:
       - "5000:5000"
+    volumes:
+      - ./kallpa-backend:/app
+    command: gunicorn --reload --bind 0.0.0.0:5000 run:app
     depends_on:
       db:
         condition: service_healthy
