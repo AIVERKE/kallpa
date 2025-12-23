@@ -3,6 +3,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Kallpa palette */
+  --kallpa-indigo-dark: #202060; /* Azul Oscuro */
+  --kallpa-blue: #2A52BE; /* Azul Real */
+  --kallpa-purple: #A100C1; /* Púrpura */
+  --kallpa-yellow: #FFD700; /* Amarillo */
+  --kallpa-orange: #EFA00B; /* Naranja */
 }
 
 @theme inline {
@@ -23,4 +29,54 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim-fade-in-up { animation: fadeInUp 380ms ease-out both; }
+.anim-slide-in-left { animation: slideInLeft 420ms ease-out both; }
+.anim-slide-in-right { animation: slideInRight 420ms ease-out both; }
+.anim-scale-in { animation: scaleIn 320ms ease-out both; }
+
+/* Dark select options for readability on dark UI */
+select.dark-select {
+  background-color: transparent;
+  color: #ffffff;
+}
+select.dark-select option {
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+select.dark-select optgroup {
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+
+/* Diffuse background inspired by noche.webp palette */
+.noche-diffuse-bg {
+  /* Multi-stop radial gradients (electric blue, magenta, amber) over deep navy */
+  background:
+    radial-gradient(1200px circle at 15% 40%, rgba(42, 82, 190, 0.18), transparent 40%),
+    radial-gradient(900px circle at 80% 20%, rgba(161, 0, 193, 0.14), transparent 45%),
+    radial-gradient(700px circle at 85% 80%, rgba(239, 160, 11, 0.10), transparent 50%),
+    linear-gradient(180deg, #0a0a12 0%, #0f0f1f 100%);
 }
