@@ -12,7 +12,7 @@ const menuItems = [
   { name: "Ventas (Órdenes)", href: "/dashboard/sales" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
   const router = useRouter();
   const pathname = usePathname();
   const { clear } = useTenant();
@@ -24,12 +24,16 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-64 text-white min-h-screen p-4 flex flex-col"
+      className={`w-64 text-white h-full overflow-y-auto p-4 flex flex-col fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 md:static md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
       style={{
         background: "linear-gradient(180deg, var(--kallpa-indigo-dark) 0%, var(--kallpa-purple) 100%)",
         borderRight: "3px solid var(--kallpa-blue)",
       }}
     >
+      {/* Cabezal móvil con botón cerrar */}
+      <div className="md:hidden flex justify-end mb-2">
+        <button onClick={onClose} className="px-2 py-1 rounded-md text-white/80 hover:text-white hover:bg-white/10">✕</button>
+      </div>
       <div className="mb-8 px-2">
         <div className="flex items-center gap-2">
           <img src="/kallpa.png" alt="Kallpa" className="h-12 w-auto" />

@@ -5,6 +5,8 @@ const products = [
   { name: "Gorra Logo", sku: "MOD-004", stock: 56, priceBs: "Bs 80,00", status: "En stock" },
 ];
 
+import Link from "next/link";
+
 export default function InventoryPage() {
   return (
     <div className="anim-fade-in-up">
@@ -15,6 +17,16 @@ export default function InventoryPage() {
         Inventario
       </h2>
       <div className="mt-4 h-1 w-24 rounded-full" style={{ backgroundImage: "linear-gradient(90deg, var(--kallpa-yellow), var(--kallpa-orange))" }} />
+
+      <div className="mt-6">
+        <Link
+          href="/dashboard/inventory/product-form"
+          className="inline-block px-4 py-2 rounded-md font-semibold"
+          style={{ backgroundImage: "linear-gradient(90deg, var(--kallpa-blue), var(--kallpa-purple))" }}
+        >
+          Crear Producto
+        </Link>
+      </div>
 
       <div className="mt-8 rounded-xl overflow-hidden anim-scale-in" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
         <table className="w-full">
