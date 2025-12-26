@@ -8,9 +8,13 @@ from config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    
+    if test_config:
+        app.config.update(test_config)
+    else:
+        app.config.from_object(Config)
 
     # Inicializar plugins
     db.init_app(app)
