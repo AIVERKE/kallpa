@@ -4,6 +4,7 @@ from app import db
 from app.models import Producto, Variante
 from app.utils import tenant_required
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import and_
 import json
 import traceback
 
@@ -207,7 +208,6 @@ def create_product():
         current_app.logger.error(traceback.format_exc())
         return jsonify({"error": f"Error interno: {str(e)}"}), 500
 
-
 @inventory_bp.route('/products/<int:producto_id>', methods=['GET'])
 @tenant_required
 def get_product(producto_id):
@@ -254,4 +254,105 @@ def get_product(producto_id):
         
     except Exception as e:
         current_app.logger.error(f"Error en get_product: {str(e)}")
+        return jsonify({"error": "Error interno del servidor"}), 500
+
+@inventory_bp.route('/check-availability', methods=['POST'])
+@tenant_required
+def check_product_availability():
+    """
+    Endpoint para que la IA verifique disponibilidad de productos.
+    
+    Input: {"product_name": "Vestido", "query_attrs": {"talla": "M", "color": "Rojo"}}
+    Output: {"available": true, "price": 200, "stock": 5} o {"available": false}
+    
+    Lógica:
+    1. Buscar producto por nombre (con ILIKE para coincidencias parciales)
+    2. Buscar variante con atributos específicos
+    3. Verificar stock > 0
+    """
+    try:
+        data = request.get_json()
+        
+        # Validaciones básicas
+        if not data:
+            return jsonify({"error": "No se proporcionaron datos"}), 400
+            
+        product_name = data.get('product_name')
+        if not product_name:
+            return jsonify({"error": "El campo 'product_name' es requerido"}), 400
+            
+        query_attrs = data.get('query_attrs', {})
+        
+        # Buscar productos por nombre (usando ILIKE para coincidencias parciales)
+        productos = Producto.query.filter(
+            Producto.tienda_id == g.tienda.tienda_id,
+            Producto.activo == True,
+            Producto.nombre.ilike(f'%{product_name}%')
+        ).all()
+        
+        if not productos:
+            return jsonify({"available": False}), 200
+        
+        # Para cada producto encontrado, buscar variantes que coincidan
+        for producto in productos:
+            # Si no tiene variantes (producto simple)
+            if not producto.tiene_variantes:
+                # Buscar la variante estándar
+                variante = Variante.query.filter(
+                    Variante.producto_id == producto.producto_id,
+                    Variante.nombre_variante == "Estándar"
+                ).first()
+                
+                if variante and variante.stock_actual > 0:
+                    precio_total = float(producto.precio_base) + float(variante.precio_ajuste)
+                    return jsonify({
+                        "available": True,
+                        "price": precio_total,
+                        "stock": variante.stock_actual,
+                        "product_id": producto.producto_id,
+                        "product_name": producto.nombre,
+                        "variant_name": variante.nombre_variante
+                    }), 200
+            
+            # Si tiene variantes
+            else:
+                # Si no se especificaron atributos, no podemos buscar variante específica
+                if not query_attrs:
+                    return jsonify({
+                        "available": False,
+                        "message": "Producto tiene variantes pero no se especificaron atributos"
+                    }), 200
+                
+                # Buscar variante con los atributos especificados
+                # Crear filtro para atributos
+                atributos_filtro = []
+                for key, value in query_attrs.items():
+                    # Filtro para buscar en el JSONB: atributos debe contener {key: value}
+                    atributos_filtro.append(
+                        Variante.atributos.contains({key: value})
+                    )
+                
+                # Buscar variante que cumpla con todos los atributos
+                variante = Variante.query.filter(
+                    Variante.producto_id == producto.producto_id,
+                    and_(*atributos_filtro) if atributos_filtro else True
+                ).first()
+                
+                if variante and variante.stock_actual > 0:
+                    precio_total = float(producto.precio_base) + float(variante.precio_ajuste)
+                    return jsonify({
+                        "available": True,
+                        "price": precio_total,
+                        "stock": variante.stock_actual,
+                        "product_id": producto.producto_id,
+                        "product_name": producto.nombre,
+                        "variant_name": variante.nombre_variante,
+                        "attributes": variante.atributos
+                    }), 200
+        
+        # Si llegamos aquí, no se encontró producto con stock
+        return jsonify({"available": False}), 200
+        
+    except Exception as e:
+        current_app.logger.error(f"Error en check_product_availability: {str(e)}")
         return jsonify({"error": "Error interno del servidor"}), 500
