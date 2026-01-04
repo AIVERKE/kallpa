@@ -9,7 +9,7 @@ const menuItems = [
   { name: "Tiendas (Tenants)", href: "/dashboard/tenants" },
   { name: "Inventario", href: "/dashboard/inventory" },
   { name: "CRM (Clientes)", href: "/dashboard/crm" },
-  { name: "Ventas (Órdenes)", href: "/dashboard/sales" },
+  { name: "Órdenes", href: "/dashboard/orders" },
 ];
 
 export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
